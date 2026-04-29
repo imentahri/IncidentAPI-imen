@@ -16,6 +16,8 @@ namespace IncidentAPI_imen.Models
         public string Email { get; set; } = string.Empty;*/
 
         [Required]
+        [RegularExpression("LOW|MEDIUM|HIGH|CRITICAL", ErrorMessage = "Invalid severity")]
+
         public string Severity { get; set; } = string.Empty;
         
 

@@ -1,16 +1,26 @@
+﻿using IncidentAPI_imen.Models;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Add services
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// ✅ IMPORTANT : éviter conflit avec les tests
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddDbContext<IncidentsDbContext>(options =>
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString("IncidentsConnection")
+        ));
+}
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.2
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -19,9 +29,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
+
+// 🔥 OBLIGATOIRE POUR WebApplicationFactory
+public partial class Program { }
