@@ -7,6 +7,8 @@ using Xunit;
 using System.Net.Http;
 namespace AppTests
 {
+    [Trait("Category", "Integration")]
+
     public class IncidentsIntegrationTests : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly HttpClient _client;

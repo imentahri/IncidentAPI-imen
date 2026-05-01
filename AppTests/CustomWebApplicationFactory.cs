@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using IncidentAPI_imen.Models;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
-using IncidentAPI_imen.Models;
 
 namespace AppTests
 {
@@ -13,35 +14,32 @@ namespace AppTests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
-
-            builder.ConfigureServices(services =>
+            builder.ConfigureServices((context, services) =>
             {
-                // Supprimer DbContext existant (SQL Server ou autre)
+                // Supprimer l'ancien DbContext
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(DbContextOptions<IncidentsDbContext>));
-
                 if (descriptor != null)
                     services.Remove(descriptor);
 
-                var descriptor2 = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions));
+                // Récupérer la config
+                var configuration = context.Configuration;
+                var connectionString = configuration.GetConnectionString("IncidentsConnection");
 
-                if (descriptor2 != null)
-                    services.Remove(descriptor2);
-
-                // Ajouter InMemory DB UNIQUEMENT
+                // Ajouter le DbContext avec la bonne connexion
                 services.AddDbContext<IncidentsDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase("TestDb");
-                });
+                    options.UseSqlServer(connectionString));
 
+                // Construire le provider
                 var sp = services.BuildServiceProvider();
 
-                using var scope = sp.CreateScope();
-                var db = scope.ServiceProvider.GetRequiredService<IncidentsDbContext>();
-
-                db.Database.EnsureDeleted();
-                db.Database.EnsureCreated();
+                // Initialiser la BD
+                using (var scope = sp.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<IncidentsDbContext>();
+                    db.Database.EnsureDeleted();
+                    db.Database.EnsureCreated();
+                }
             });
         }
     }

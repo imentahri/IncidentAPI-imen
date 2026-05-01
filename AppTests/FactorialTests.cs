@@ -5,6 +5,8 @@ using System.Text;
 using Xunit;
 namespace AppTests
 {
+    [Trait("Category", "Unit")]
+
     public class FactorialTests
     {
         /*[Fact]

@@ -3,6 +3,8 @@
 using Xunit;
 namespace AppTests
 {
+    [Trait("Category", "Unit")]
+
     public class SumTests
     {
         [Fact]
