@@ -1,4 +1,4 @@
 <Solution>
   <Project Path="../AppTests/AppTests.csproj" Id="84e9c914-5200-46d1-94fe-ead0e93e122b" />
-  <Project Path="IncidentAPI-imen.csproj" />
+  <Project Path="IncidentAPI-imen/IncidentAPI-imen.csproj" />
 </Solution>
