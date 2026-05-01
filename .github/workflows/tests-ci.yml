@@ -4,9 +4,21 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          SA_PASSWORD: "My_password123"
+        ports:
+          - 1433:1433
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -15,11 +27,13 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore IncidentAPI-imen.slnx
       - name: Build project
-        run: dotnet build --no-restore
+        run: dotnet build IncidentAPI-imen.slnx --no-restore
       - name: Run tests
-        run: dotnet test --no-build --verbosity normal --logger "trx;LogFileName=TestResults.trx"
+        env:
+          ConnectionStrings__IncidentsConnection: "Server=localhost,1433;Database=IncidentsDb;User Id=sa;Password=My_password123;TrustServerCertificate=True;"
+        run: dotnet test IncidentAPI-imen.slnx --no-build --verbosity normal --logger "trx;LogFileName=TestResults.trx"
       - name: Upload test report
         uses: actions/upload-artifact@v4
         with:
