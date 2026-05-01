@@ -21,12 +21,11 @@ if (!builder.Environment.IsEnvironment("Testing"))
 var app = builder.Build();
 
 // Swagger
-if (app.Environment.IsDevelopment())
-{
+
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

@@ -1,0 +1,10 @@
+bin/
+obj/
+.git
+.gitignore
+.vs/
+*.user
+*.suo
+*.log
+Dockerfile
+.dockerignore
